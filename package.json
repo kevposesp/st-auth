@@ -1,0 +1,19 @@
+{
+  "name": "st-auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node --env-file=config/.env --watch server.js",
+    "start": "node server.js"
+  },
+  "author": "kevposesp",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express-async-handler": "^1.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.9.3",
+    "sequelize": "^6.37.2"
+  }
+}
