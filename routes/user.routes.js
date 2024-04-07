@@ -1,7 +1,11 @@
 const {
-  login, 
-  register
+  profile,
+  login,
+  register,
+  update
 } = require("../controllers/user.controller");
+
+const { verifyToken } = require("../middleware/JWT");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -11,6 +15,14 @@ module.exports = function (app) {
     );
     next();
   });
+
+  app.get(
+    "/user",
+    [
+      verifyToken
+    ],
+    profile
+  );
 
   app.post(
     "/user/login",
@@ -22,6 +34,14 @@ module.exports = function (app) {
     "/user/register",
     [],
     register
+  );
+
+  app.put(
+    "/user/update",
+    [
+      verifyToken
+    ],
+    update
   );
 
 }
