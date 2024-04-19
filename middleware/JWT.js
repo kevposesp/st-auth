@@ -30,8 +30,8 @@ const verifyToken = asyncHandler((req, res, next) => {
     });
 });
 
-const JWT = {
+const JWT_MIDDLEWARE = {
     verifyToken
 };
 
-module.exports = JWT;
+module.exports = JWT_MIDDLEWARE;

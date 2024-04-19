@@ -2,10 +2,12 @@ const {
   profile,
   login,
   register,
-  update
+  update,
+  addOrRemoveRole
 } = require("../controllers/user.controller");
 
 const { verifyToken } = require("../middleware/JWT");
+const { verifyPermission } = require("../middleware/PERMISSION");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -43,5 +45,14 @@ module.exports = function (app) {
     ],
     update
   );
+
+  app.post(
+    "/user/addOrRemoveRole/:id",
+    [
+      verifyToken,
+      verifyPermission(["addOrRemoveRole"])
+    ],
+    addOrRemoveRole
+  )
 
 }

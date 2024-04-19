@@ -6,6 +6,7 @@ const verifyEmail = require("../utils/existsEmail");
 const verifyUsername = require("../utils/existsUsername");
 
 const User = db.user;
+const Role = db.role;
 
 const profile = asyncHandler(async (req, res) => {
 
@@ -175,9 +176,47 @@ const update = asyncHandler(async (req, res) => {
 
 });
 
+const addOrRemoveRole = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { roleId } = req.body;
+
+  if (!roleId) {
+    return res.status(400).send({ message: "Missing required fields" });
+  }
+
+  try {
+    let user = await User.findByPk(id);
+
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    let role = await Role.findByPk(roleId);
+
+    if (!role) {
+      return res.status(404).send({ message: "Role not found" });
+    }
+
+    let userRoles = await user.getRoles();
+    let userRoleIds = userRoles.map(role => role.id);
+
+    if (userRoleIds.includes(role.id)) {
+      await user.removeRole(role.id);
+    } else {
+      await user.addRole(role.id);
+    }
+
+    res.status(200).send({ message: "Role added/removed", user: user.toResponse() });
+
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+});
+
 module.exports = {
   profile,
   login,
   register,
-  update
+  update,
+  addOrRemoveRole
 };

@@ -41,6 +41,9 @@ db.user = require("../models/user.model.js")(
     db.refreshToken
 );
 
+db.role = require("../models/role.model.js")(sequelize, Sequelize);
+db.permission = require("../models/permission.model.js")(sequelize, Sequelize);
+
 // RefreshToken
 db.refreshToken.belongsTo(db.user, {
     foreignKey: 'userId', targetKey: 'id'
@@ -48,6 +51,40 @@ db.refreshToken.belongsTo(db.user, {
 
 db.user.hasOne(db.refreshToken, {
     foreignKey: 'userId', targetKey: 'id'
+});
+
+// Role
+db.role.belongsToMany(db.permission, {
+    through: "st_auth_role_permission",
+    as: "permissions",
+    foreignKey: "roleId",
+    otherKey: "permissionId",
+    onDelete: 'CASCADE'
+});
+
+db.permission.belongsToMany(db.role, {
+    through: "st_auth_role_permission",
+    as: "roles",
+    foreignKey: "permissionId",
+    otherKey: "roleId",
+    onDelete: 'CASCADE'
+});
+
+// User roles
+db.user.belongsToMany(db.role, {
+    through: "st_auth_user_roles",
+    as: "roles",
+    foreignKey: "userId",
+    otherKey: "roleId",
+    onDelete: 'CASCADE'
+});
+
+db.role.belongsToMany(db.user, {
+    through: "st_auth_user_roles",
+    as: "users",
+    foreignKey: "roleId",
+    otherKey: "userId",
+    onDelete: 'CASCADE'
 });
 
 db.sync = (force = false) => {
@@ -61,6 +98,7 @@ db.sync = (force = false) => {
             `Drop and Resync Db\n`,
             `force drop: ${force}`
         );
+        force ? require("../utils/initDb")(db) : null;
     });
 };
 
