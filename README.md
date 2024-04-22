@@ -52,7 +52,7 @@ const app = express();
 const stAuth = require("st-auth");
 stAuth.dbSync();
 
-// Configuración de la base de datos
+// Configuración de tu base de datos
 const db = require("./models");
 db.sequelize.sync({ force: true }).then(() => {
   console.log('Drop and Resync Db');
@@ -76,6 +76,162 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+```
+
+## Uso de middleware en las rutas de tu proyecto
+```javascript
+// Requerimos el paquete e importamos los middlewares que necesitemos
+const { verifyToken, verifyPermission } = require("st-auth");
+
+module.exports = function (app) {
+    app.use(function (req, res, next) {
+        res.header(
+            "Access-Control-Allow-Headers",
+            "x-access-token, Origin, Content-Type, Accept"
+        );
+        next();
+    });
+
+    app.post(
+        "/createPermission", 
+        [
+            verifyToken,// Uso de middleware del token (x-access-token)
+            verifyPermission(["createPermission"])// Uso de middleware, comprobación si el usuario puede ejecutar la funcion
+        ],
+        function (req, res) {
+            console.log("Create Permission");
+            res.send("Create Permission");
+        }
+    );
+}
+```
+
+## Rutas
+```javascript
+// User
+  // Register
+  (Post)http://localhost:3000/user/register
+  (body)
+    {
+      "username": "",
+      "email": "",
+      "password": ""
+    }
+  (optional)
+    {
+      name = null,
+      address = null,
+      note = null,
+      phone = null,
+      secondPhone = null,
+      enableLog = true,
+      status = 1
+    }
+  
+  // Login
+  (Post)http://localhost:3000/user/login
+  (body)
+    {
+      "user": "st_admin",
+      "password": "st_admin"
+    }
+
+  // Profile ST
+  (Get)http://localhost:3000/user
+  (headers)x-access-token: {{Token}}
+
+  // Update profile
+  (Put)http://localhost:3000/user/update
+  (headers)x-access-token: {{Token}}
+  (body-optional)
+    {
+      name,
+      email,
+      address,
+      note,
+      phone,
+      secondPhone,
+      username,
+      enableLog,
+      status
+    }
+  
+  // AddOrRemoveRole
+  (Post)http://localhost:3000/user/addOrRemoveRole/{{idUser}}
+  (headers)x-access-token: {{Token}}
+  (MiddlewarePermission): "addOrRemoveRole"
+  (body)
+    {
+      "roleId": ""
+    }
+  
+// Permission
+  // Create permission
+  (Post)http://localhost:3000/permission/create
+  (headers)x-access-token: {{Token}}
+  (MiddlewarePermission): "createPermission"
+  (body)
+    {
+      "name": ""
+    }
+
+  // Get all permissions
+  (Get)http://localhost:3000/permission/all
+  (headers)x-access-token: {{Token}}
+  (MiddlewarePermission): "readPermission"
+
+  // Update permission
+  (Put)http://localhost:3000/permission/update/{{idPermission}}
+  (headers)x-access-token: {{Token}}
+  (MiddlewarePermission): "updatePermission"
+  (body)
+    {
+      "name": ""
+    }
+  
+  // Delete permission
+  (Delete)http://localhost:3000/permission/update/{{idPermission}}
+  (headers)x-access-token: {{Token}}
+  (MiddlewarePermission): "deletePermission"
+
+// Role
+  // Create role
+  (Post)http://localhost:3000/role/create
+  (headers)x-access-token: {{Token}}
+  (MiddlewareRole): "createRole"
+  (body)
+    {
+      "name": ""
+    }
+
+  // Get all roles
+  (Get)http://localhost:3000/role/all
+  (headers)x-access-token: {{Token}}
+  (MiddlewareRole): "readRole"
+
+  // Update role
+  (Put)http://localhost:3000/role/update/{{idRole}}
+  (headers)x-access-token: {{Token}}
+  (MiddlewareRole): "updateRole"
+  (body)
+    {
+      "name": ""
+    }
+  
+  // Delete role
+  (Delete)http://localhost:3000/role/update/{{idRole}}
+  (headers)x-access-token: {{Token}}
+  (MiddlewareRole): "deleteRole"
+
+  // AddOrRemovePermission to role
+  (Post)http://localhost:3000/role/addOrRemovePermission/{{idRole}}
+  (headers)x-access-token: {{Token}}
+  (MiddlewareRole): "addOrRemovePermission"
+  (body)
+    {
+      "name": ""
+    }
+
 ```
 
 ## Contribución

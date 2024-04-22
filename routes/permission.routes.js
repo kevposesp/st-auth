@@ -21,7 +21,7 @@ module.exports = function (app) {
         "/permission/create",
         [
             verifyToken,
-            verifyPermission(["create"])
+            verifyPermission(["createPermission"])
         ],
         create
     );
@@ -30,7 +30,7 @@ module.exports = function (app) {
         "/permission/all",
         [
             verifyToken,
-            verifyPermission(["read"])
+            verifyPermission(["readPermission"])
         ],
         readAll
     );
@@ -39,7 +39,7 @@ module.exports = function (app) {
         "/permission/update/:id",
         [
             verifyToken,
-            verifyPermission(["update"])
+            verifyPermission(["updatePermission"])
         ],
         update
     );
@@ -48,7 +48,7 @@ module.exports = function (app) {
         "/permission/delete/:id",
         [
             verifyToken,
-            verifyPermission(["delete"])
+            verifyPermission(["deletePermission"])
         ],
         remove
     );

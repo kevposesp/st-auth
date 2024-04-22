@@ -1,4 +1,6 @@
 const db = require("./models");
+const { verifyToken } = require("./middleware/JWT");
+const { verifyPermission } = require("./middleware/PERMISSION");
 
 const routes = (app) => {
     require("./routes/user.routes")(app);
@@ -8,7 +10,9 @@ const routes = (app) => {
 
 const stAuth = {
     dbSync: db.sync,
-    routes
+    routes,
+    verifyToken,
+    verifyPermission
 }
 
 module.exports = stAuth

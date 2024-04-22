@@ -22,7 +22,7 @@ module.exports = function (app) {
         "/role/create",
         [
             verifyToken,
-            verifyPermission(["create"])
+            verifyPermission(["createRole"])
         ],
         create
     );
@@ -31,7 +31,7 @@ module.exports = function (app) {
         "/role/all",
         [
             verifyToken,
-            verifyPermission(["read"])
+            verifyPermission(["readRole"])
         ],
         readAll
     );
@@ -40,7 +40,7 @@ module.exports = function (app) {
         "/role/update/:id",
         [
             verifyToken,
-            verifyPermission(["update"])
+            verifyPermission(["updateRole"])
         ],
         update
     );
@@ -49,7 +49,7 @@ module.exports = function (app) {
         "/role/delete/:id",
         [
             verifyToken,
-            verifyPermission(["delete"])
+            verifyPermission(["deleteRole"])
         ],
         remove
     );
