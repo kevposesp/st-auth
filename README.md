@@ -50,13 +50,11 @@ const cors = require("cors");
 const app = express();
 
 const stAuth = require("st-auth");
-stAuth.dbSync();
+const db = require("./models");
 
 // Configuración de tu base de datos
-const db = require("./models");
-db.sequelize.sync({ force: true }).then(() => {
-  console.log('Drop and Resync Db');
-})
+stAuth.dbSync(true)
+db.sequelize.sync({ force: true })
 
 // Configuración del CORS
 var corsOptions = {
@@ -70,6 +68,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Carga de rutas de autenticación
 stAuth.routes(app);
+
+// Tus rutas
+require("./routes/otras.routes")(app);
 
 // Configuración del puerto
 const PORT = process.env.PORT || 3000;
@@ -232,6 +233,60 @@ module.exports = function (app) {
       "name": ""
     }
 
+```
+
+## Models
+(Ejemplo de relaciones entre tus modelos y los de st-auth)
+```javascript
+// Importamos el modelo user y sequelize para el mismo uso de conexión a bbdd
+const { user, Sequelize, sequelize } = require("st-auth/models")
+
+const db = {};
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+
+// Requerimos el modelo y lo creamos pasandole la conexión
+db.profile = require("./profile.model.js")(sequelize, Sequelize);
+
+// Guardamos el user de st-auth en db.user
+db.user = user;
+
+// Creamos la relacion un perfil pertenece a un usuario y un usuario puede tener varios perfiles
+db.profile.belongsTo(db.user, {
+    foreignKey: "userId",
+    as: "user",
+});
+
+db.user.hasMany(db.profile, { as: "profiles" });
+
+module.exports = db;
+```
+
+## Model Profile Ejemplo
+```javascript
+module.exports = (sequelize, Sequelize) => {
+    const Profile = sequelize.define("profiles", {
+        id: {
+            allowNull: false,
+            primaryKey: true,
+            type: Sequelize.UUID,
+            defaultValue: Sequelize.UUIDV4
+        },
+        name: {
+            type: Sequelize.STRING
+        },
+        apellido: {
+            type: Sequelize.STRING
+        },
+        email: {
+            type: Sequelize.STRING
+        },
+        telefono: {
+            type: Sequelize.STRING
+        }
+    });
+    return Profile;
+}
 ```
 
 ## Contribución

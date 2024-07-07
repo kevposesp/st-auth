@@ -1,26 +1,9 @@
-const config = require("../config/db.config.js");
 const config_auth = require("../config/auth.config.js");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
-const Sequelize = require("sequelize");
-const sequelize = new Sequelize(
-    config.DB,
-    config.USER,
-    config.PASSWORD,
-    {
-        host: config.HOST,
-        dialect: config.dialect,
-        port: config.port,
-        pool: {
-            max: config.pool.max,
-            min: config.pool.min,
-            acquire: config.pool.acquire,
-            idle: config.pool.idle
-        }
-    }
-);
+const { Sequelize, sequelize } = require("../config/connection.sequelize");
 
 const db = {};
 db.Sequelize = Sequelize;
@@ -101,7 +84,5 @@ db.sync = (force = false) => {
         force ? require("../utils/initDb")(db) : null;
     });
 };
-
-
 
 module.exports = db;
